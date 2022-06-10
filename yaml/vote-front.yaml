@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-vote-front-animal
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azure-vote-front
+  template:
+    metadata:
+      labels:
+        app: azure-vote-front
+        track: stable
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: azure-vote-front
+        image: mcr.microsoft.com/azuredocs/azure-vote-front:v1
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        envFrom:
+        - configMapRef:
+            name: azure-vote-frontend-configmap
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-vote-front-fruit
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azure-vote-front
+  template:
+    metadata:
+      labels:
+        app: azure-vote-front
+        track: canary
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: azure-vote-front
+        image: mcr.microsoft.com/azuredocs/azure-vote-front:v2
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        envFrom:
+        - configMapRef:
+            name: azure-vote-frontend-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: azure-vote-front
+  namespace: dev
+spec:
+  # type: NodePort
+  # ports:
+  # - port: 30007
+  #   targetPort: 80
+  #   nodePort: 30007 
+  type: LoadBalancer
+  ports:
+  - port: 8000
+    targetPort: 80
+  selector:
+    app: azure-vote-front
+    # track: stable
+---

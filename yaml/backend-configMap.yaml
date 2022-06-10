@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: azure-vote-backend-configmap
+  namespace: dev
+  annotations:
+    kubernetes.io/description: "backend configmap"
+
+data:
+  # property-like keys; each key maps to a simple value
+  ALLOW_EMPTY_PASSWORD: "yes"
